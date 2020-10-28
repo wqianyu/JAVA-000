@@ -1,0 +1,32 @@
+测试计算机：mac pro 内存8g，2核i5
+
+512m条件下，cms的full gc效果最优，时间在1ms以下，young gc在20-40ms；serialGc gc时间最长，在20-50ms之间；
+parallel young gc都在10ms以下，但是full gc在40ms左右；g1 gc 都在10ms以下，4线程情况下。
+
+总结：在计算机cpu核数，内存足够的情况下。gc的效果g1>cms>parallel>serial
+通过压测例子：初始堆大小、最大堆大小对系统的吞吐量有一定帮助，但是达到一定容量后，堆帮助提升的吞吐量逐渐递减，
+效果越来越差。所以堆不是越大越好，还是要合理配置，使机器性能最大化发挥
+
+
+服务器xms1g xmx1g情况下的压测效果
+wuqyMacBook-Pro:2020-10-25 wuqianyu$ wrk -t 16 -c 200 -d60s http://localhost:8088/api/hello
+Running 1m test @ http://localhost:8088/api/hello
+  16 threads and 200 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    82.25ms  134.96ms   1.94s    89.37%
+    Req/Sec   299.72    171.86     1.48k    61.37%
+  278308 requests in 1.00m, 33.23MB read
+  Socket errors: connect 0, read 43, write 0, timeout 2
+Requests/sec:   4635.69
+Transfer/sec:    566.71KB
+
+服务器xms2g xmx2g情况下的压测效果
+wuqyMacBook-Pro:2020-10-25 wuqianyu$ wrk -t 16 -c 200 -d60s http://localhost:8088/api/hello
+Running 1m test @ http://localhost:8088/api/hello
+  16 threads and 200 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    73.20ms  121.87ms   1.75s    89.00%
+    Req/Sec   373.60    235.84     1.54k    57.96%
+  350796 requests in 1.00m, 41.88MB read
+Requests/sec:   5838.00
+Transfer/sec:    713.70KB
