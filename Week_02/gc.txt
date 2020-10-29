@@ -30,3 +30,20 @@ Running 1m test @ http://localhost:8088/api/hello
   350796 requests in 1.00m, 41.88MB read
 Requests/sec:   5838.00
 Transfer/sec:    713.70KB
+
+机器最大8g内存：
+java -Xmx128m -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx512m -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx1g -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx2g -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx4g -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx8g -XX:+PrintGCDetails GCLogAnalysis
+java -Xmx12g -XX:+PrintGCDetails GCLogAnalysis
+总结：
+        最大堆越小gc次数越多，极限情况下产生oom
+         2g之后（内存容量的1/8），gc的次数相对稳定（最大堆大小越大，不一定减少gc次数，有个最有性价比值）；处理能力不会再有飞跃增长
+
+         最小堆128m，分配次数（9263）；最大堆4g，分配次数（16942）大概为128m的两倍。但是堆容量确为128m的32倍
+         还是要挑选最优性能的堆大小，大约2g-4g，机器性能才不至于太浪费。
+         而且4g，8g，12g配置，heap的大小好像不会根据配置的增大而增大，趋于一个极限值。大概4g。虽然我的机器最大只有8g
+         jvm不会根据xmx配置是多少就多少
