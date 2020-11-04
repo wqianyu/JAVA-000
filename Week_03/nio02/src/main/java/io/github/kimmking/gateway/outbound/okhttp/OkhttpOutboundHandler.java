@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.util.CharsetUtil;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -75,7 +76,7 @@ public class OkhttpOutboundHandler {
             response.headers().set("Content-Type", "application/json");
             response.headers().setInt("Content-Length", Integer.parseInt(okHttpResponse.header("Content-Length")));
             response.headers().set("nio", fullRequest.headers().get("nio"));
-            String data = response.content().toString();
+            String data = response.content().toString(CharsetUtil.UTF_8);
             System.out.println(data);
         } catch (Exception e) {
             e.printStackTrace();

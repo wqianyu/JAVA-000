@@ -33,6 +33,7 @@ public class NettyHttpClient {
 //                     客户端发送的是httprequest，所以要使用HttpRequestEncoder进行编码
 //                    ch.pipeline().addLast(new HttpRequestEncoder());
                     ch.pipeline().addLast(new HttpClientCodec());
+                    ch.pipeline().addLast(new HttpObjectAggregator(1024 * 1024));//不加会导致httpResponse，header跟body分开发送
                     ch.pipeline().addLast(new NettyHttpClientOutboundHandler());
                 }
             });
