@@ -1,6 +1,9 @@
 package io.github.kimmking.gateway.outbound.okhttp;
 
+import com.google.common.collect.Lists;
 import io.github.kimmking.gateway.outbound.httpclient4.NamedThreadFactory;
+import io.github.kimmking.gateway.router.HttpEndpointRouter;
+import io.github.kimmking.gateway.router.HttpEndpointRouterImpl;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +32,8 @@ public class OkhttpOutboundHandler {
 
     private ExecutorService proxyService;
 
+    private HttpEndpointRouter httpEndpointRouter;
+
     private final static OkHttpClient client = new OkHttpClient.Builder()
             .connectionPool(new ConnectionPool(Runtime.getRuntime().availableProcessors() * 2, 1L, TimeUnit.MINUTES))
             .connectTimeout(60, TimeUnit.SECONDS)      //设置连接超时
@@ -38,7 +43,10 @@ public class OkhttpOutboundHandler {
             .build();
 
     public OkhttpOutboundHandler(String backendUrl) {
-        this.backendUrl = backendUrl.endsWith("/")?backendUrl.substring(0,backendUrl.length()-1):backendUrl;
+        httpEndpointRouter = new HttpEndpointRouterImpl();
+        String url = httpEndpointRouter.route(Lists.newArrayList(backendUrl.split(";")));
+        this.backendUrl = url.endsWith("/")?url.substring(0,url.length()-1):url;
+        System.out.println("url:"+this.backendUrl);
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         long keepAliveTime = 1000;
         int queueSize = 2048;
